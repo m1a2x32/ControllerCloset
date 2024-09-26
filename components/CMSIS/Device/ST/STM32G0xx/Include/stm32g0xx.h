@@ -73,18 +73,6 @@
   /* #define STM32G041xx */   /*!< STM32G041xx Devices */
 #endif
 
-/*  Tip: To avoid modifying this file each time you need to switch between these
-        devices, you can define the device in your toolchain compiler preprocessor.
-  */
-#if !defined  (USE_HAL_DRIVER)
-/**
- * @brief Comment the line below if you will not use the peripherals drivers.
-   In this case, these drivers will not be included and the application code will
-   be based on direct access to peripherals registers
-   */
-  /*#define USE_HAL_DRIVER */
-#endif /* USE_HAL_DRIVER */
-
 /**
   * @brief CMSIS Device version number $VERSION$
   */
@@ -225,10 +213,6 @@ typedef enum
 /**
   * @}
   */
-
-#if defined (USE_HAL_DRIVER)
- #include "stm32g0xx_hal.h"
-#endif /* USE_HAL_DRIVER */
 
 #ifdef __cplusplus
 }

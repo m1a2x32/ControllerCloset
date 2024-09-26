@@ -30,7 +30,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS   ON)
 set(CMAKE_TOOLCHAIN_FILE            gcc-arm-none-eabi)# This path is defined in the list() function above
 
 # ------------------- PROJECT SETUP -------------------
-project("WH_Board")
+project("ClosetController")
 enable_language(C CXX ASM)
 
 # ------------------- Linker File ------------------- 
