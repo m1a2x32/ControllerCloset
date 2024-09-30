@@ -50,11 +50,24 @@ namespace HAL::GPIO::INPUT {
     GPIO_INPUT::GPIO_INPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin): IO(_ioPort, _ioPin){
         set_io_type(GPIO_MODES::INPUT_MODE);
     }
+    
+    bool GPIO_INPUT::read_state(){
+        return (port->IDR & (1 << pinNr)) != 0;
+    }
 }
 
 namespace HAL::GPIO::OUTPUT{
     GPIO_OUTPUT::GPIO_OUTPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin) : IO(_ioPort, _ioPin){
         set_io_type(GPIO_MODES::OUTPUT_MODE);
+    }
+
+    void GPIO_OUTPUT::set_pin(){
+        // Todo: double check this work, if not bsrr reg
+        SET_BIT(port->ODR, (1 << pinNr));
+    }
+
+    void GPIO_OUTPUT::reset_pin(){
+        CLEAR_BIT(port->ODR, (1 << pinNr));
     }
 
     void GPIO_OUTPUT::set_output_type(TYPE_REG oTypeReg){

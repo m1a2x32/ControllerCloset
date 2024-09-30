@@ -6,5 +6,6 @@ namespace HAL::GPIO::INPUT{
     class GPIO_INPUT : private IO {
         public:
             GPIO_INPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin);
+            bool read_state();
     };
 }
