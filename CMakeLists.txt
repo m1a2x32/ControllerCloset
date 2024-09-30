@@ -1,16 +1,4 @@
-#############################################################################################################################
-# file:  CMakeLists.txt
-# brief: Template "CMakeLists.txt" for building of executables and static libraries.
-#
-# usage: Edit "VARIABLES"-section to suit project requirements.
-#        For debug build:
-#          cmake -G "Unix Makefiles" -B build -B Debug
-#          make -C Debug VERBOSE=1 -j
-#        For release build:
-#             cmake -G "Unix Makefiles" -B build -B Release
-#          make -C Release VERBOSE=1 -j
-#############################################################################################################################
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.22)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 message("Build type: "              ${CMAKE_BUILD_TYPE})
@@ -36,30 +24,30 @@ enable_language(C CXX ASM)
 # ------------------- Linker File ------------------- 
 set(linker_script_SRC               ${CMAKE_CURRENT_SOURCE_DIR}/STM32G070RBTx_FLASH.ld)
 
-# -------------------  MCU Parameters ------------------- 
+# -------------------  MCU Configs ------------------- 
 # include(MAKE NEW PARA FOR NEW MCU CONF)
 include(STM32G0_PARA)
 
-# ------------------- CMSIS Setup -------------------
-# Path to CMSIS DIR
-set(CMSIS_DIR components/CMSIS)
+# ------------------- Driver Setup -------------------
+set(CMSIS_DIR drivers/CMSIS)
+set(HAL_DIR drivers/HAL)
+
+
+# ------------------- Includes Setup -------------------
+set(include_list ${include_list}
+    ${CMSIS_DIR}/Include
+    ${CMSIS_DIR}/Device/ST/STM32G0xx/Include
+    ${HAL_DIR}/GPIO
+)
 
 # ------------------- LIST SOURCE FILES HERE -------------------
-# Todo: Add source file to ./cmake
 set (source_list
-	src/startup/startup_stm32g070xx.s
+	${CMSIS_DIR}/Startup/startup_stm32g070xx.s
 	src/main.c
 	src/syscalls.c
 	src/sysmem.c
 	src/system_stm32g0xx.c
-)
-
-# ------------------- LIST INCLUDE DIRECTORIES HERE -------------------
-# Todo: Add include file to ./cmake
-# Todo: Add freertos
-set (include_list
-	${CMSIS_DIR}/Include
-	${CMSIS_DIR}/Device/ST/STM32G0xx/Include
+	${HAL_DIR}/GPIO/gpio.cpp
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${source_list})
@@ -92,7 +80,9 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
 	-Wl,--print-memory-usage
 )
 
-# Execute post-build to print size
+# -------------- POST BUILD --------------
+
+# Execute print size
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 	COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${CMAKE_PROJECT_NAME}>
 )
@@ -102,7 +92,7 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 	COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.hex
 )
 
-# Convert to bin file -> add conditional check?
+# Convert to bin file
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 	COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin
 )
