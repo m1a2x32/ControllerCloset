@@ -2,8 +2,6 @@
 
 #include <gpio_base.h>
 
-using namespace HAL::GPIO::AF;
-
 namespace HAL::UART{
 
     enum AVAILABLE_USARTS{
@@ -13,34 +11,19 @@ namespace HAL::UART{
         USART_4
     };
     
-    typedef struct usart
-    {
-        USART_TypeDef *usartInst;
-        GPIO_AF *rx, *tx, *rts = nullptr, *cts = nullptr;
-    };
-    
     class USART {
         public:
-            USART(AVAILABLE_USARTS instance, GPIO_AF *_rx, GPIO_AF *_tx);
+            USART(AVAILABLE_USARTS instance, HAL::GPIO::AF::GPIO_AF *_rx, HAL::GPIO::AF::GPIO_AF *_tx);
 
             // Configuration
             void configure_baud_rate(uint32_t baud);
-
-            // Flow control
-            void enable_flow_control(GPIO_AF *rtsPin, GPIO_AF *ctsPin);
-            void disable_flow_control();
-
-            void enable_rs485_driver(GPIO_AF *rtsPin);
-
-            // 
-        protected:
-            USART_TypeDef *usartInst;
-            GPIO_AF *rx, *tx, *rts = nullptr, *cts = nullptr;
+            void enable_rs485_driver(HAL::GPIO::AF::GPIO_AF *rtsPin);
+        private:
             void enable_usart();
             void disable_usart();
+        protected:
+            USART_TypeDef *usartInst;
+            HAL::GPIO::AF::GPIO_AF *rx, *tx, *rts = nullptr;
+            USART_TypeDef *get_usart_instance(AVAILABLE_USARTS target);
     };
-    
-    bool USART_Check_IsActive_RXNE(USART reg){
-
-    }
 }
