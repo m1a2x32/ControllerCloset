@@ -38,12 +38,12 @@ namespace HAL::GPIO{
             uint8_t pinNr;
 
             void set_io_type(GPIO_MODES reg);
-            GPIO_TypeDef *get_port(AVAILABLE_PORTS target);
+            GPIO_TypeDef *get_port_instance(AVAILABLE_PORTS target);
     };
 
     namespace INPUT{
 
-        class GPIO_INPUT : private IO {
+        class GPIO_INPUT : public IO {
             public:
                 GPIO_INPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin);
                 bool read_state();
@@ -64,7 +64,7 @@ namespace HAL::GPIO{
             VERY_HIGH_SPEED = GPIO_OSPEEDR_OSPEED0,
         };
 
-        class GPIO_OUTPUT : private IO {
+        class GPIO_OUTPUT : public IO {
             public:
                 GPIO_OUTPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin);
                 void set_pin();
@@ -88,7 +88,7 @@ namespace HAL::GPIO{
             AF7 = 7
         };
 
-        class GPIO_AF : private IO {
+        class GPIO_AF : public IO {
             public:
                 GPIO_AF(AVAILABLE_PORTS _ioPort, uint8_t _ioPin);
                 void set_alternate_function(ALTERNTAE_FUNCTIONS nr);

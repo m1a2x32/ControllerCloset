@@ -1,9 +1,11 @@
 #include "gpio_base.h"
+#include <stdexcept>
 
 namespace HAL::GPIO {
 
     IO::IO(AVAILABLE_PORTS _ioPort, uint8_t _ioPin) {
-        port    = get_port(_ioPort);
+        port    = get_port_instance(_ioPort);
+        if(pinNr > 15) std::range_error("Pin number not available");
         pinNr   = _ioPin;
     }
 
@@ -21,7 +23,7 @@ namespace HAL::GPIO {
         SET_BIT(port->MODER, (reg << (pinNr << 1)));
     }
 
-    GPIO_TypeDef *IO::get_port(AVAILABLE_PORTS target) {
+    GPIO_TypeDef *IO::get_port_instance(AVAILABLE_PORTS target) {
         switch (target) {
             case PORTA:
                 SET_BIT(RCC->IOPENR, RCC_IOPENR_GPIOAEN); // Enable Clock for PORTx
@@ -39,6 +41,7 @@ namespace HAL::GPIO {
                 SET_BIT(RCC->IOPENR, RCC_IOPENR_GPIOFEN);
                 return GPIOF;
             default:
+                std::logic_error("GPIO not available");
                 return nullptr;
         }
     }
