@@ -31,6 +31,7 @@ include(STM32G0_PARA)
 # ------------------- Driver Setup -------------------
 set(CMSIS_DIR drivers/CMSIS)
 set(HAL_DIR drivers/HAL)
+set(SRC_DIR src)
 
 
 # ------------------- Includes Setup -------------------
@@ -38,16 +39,19 @@ set(include_list ${include_list}
     ${CMSIS_DIR}/Include
     ${CMSIS_DIR}/Device/ST/STM32G0xx/Include
     ${HAL_DIR}/GPIO
+	${SRC_DIR}
 )
 
 # ------------------- LIST SOURCE FILES HERE -------------------
 set (source_list
 	${CMSIS_DIR}/Startup/startup_stm32g070xx.s
-	src/main.c
-	src/syscalls.c
-	src/sysmem.c
-	src/system_stm32g0xx.c
+	
 	${HAL_DIR}/GPIO/gpio.cpp
+
+	${SRC_DIR}/main.c
+	${SRC_DIR}/syscalls.c
+	${SRC_DIR}/sysmem.c
+	${SRC_DIR}/system_stm32g0xx.c
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${source_list})
