@@ -16,7 +16,7 @@ void communication_setup(){
     // USART Config
     soilSensorUsart = HAL::UART::USART(HAL::UART::AVAILABLE_USARTS::USART_1, &usartRx, &usartTx);    
     soilSensorUsart.enable_rs485_driver(&usartRts);
-
+    // Todo: config USART
     soilSensorUsart.enable_usart();
 
     NVIC_EnableIRQ(USART3_4_IRQn);
@@ -24,5 +24,5 @@ void communication_setup(){
 }
 
 void USART3_4_IRQHandler(){
-
+    // Todo: handle interrupts
 }
