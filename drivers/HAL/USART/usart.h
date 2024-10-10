@@ -18,7 +18,6 @@ namespace HAL::UART{
             // Configuration
             void configure_baud_rate(uint32_t baud);
             void enable_rs485_driver(HAL::GPIO::AF::GPIO_AF *rtsPin);
-        private:
             void enable_usart();
             void disable_usart();
         protected:

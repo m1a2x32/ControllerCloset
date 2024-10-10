@@ -5,12 +5,13 @@ using namespace HAL::GPIO::AF;
 
 namespace HAL::UART{
 
-    USART::USART(AVAILABLE_USARTS instance, HAL::GPIO::AF::GPIO_AF *_rx, HAL::GPIO::AF::GPIO_AF *_tx){
-        if (_tx == nullptr | _rx == nullptr) std::logic_error("Pins not assigned");
+    USART::USART(AVAILABLE_USARTS instance, GPIO_AF *_rx, GPIO_AF *_tx){
+        if ((_tx == nullptr) | (_rx == nullptr)) std::logic_error("Pins not assigned");
         tx = _tx;
         rx = _rx;
 
         usartInst = get_usart_instance(instance);
+        this->disable_usart();
     }
 
     USART_TypeDef *USART::get_usart_instance(AVAILABLE_USARTS target){

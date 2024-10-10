@@ -39,6 +39,7 @@ set(include_list ${include_list}
     ${CMSIS_DIR}/Include
     ${CMSIS_DIR}/Device/ST/STM32G0xx/Include
     ${HAL_DIR}/GPIO
+	${HAL_DIR}/USART
 	${SRC_DIR}
 )
 
@@ -47,11 +48,13 @@ set (source_list
 	${CMSIS_DIR}/Startup/startup_stm32g070xx.s
 	
 	${HAL_DIR}/GPIO/gpio.cpp
-
+	${HAL_DIR}/USART/usart.cpp
+	
 	${SRC_DIR}/main.c
 	${SRC_DIR}/syscalls.c
 	${SRC_DIR}/sysmem.c
 	${SRC_DIR}/system_stm32g0xx.c
+	${SRC_DIR}/soil_sensor/communication.cpp
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${source_list})
