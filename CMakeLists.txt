@@ -15,7 +15,7 @@ set(CMAKE_CXX_EXTENSIONS            ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS   ON)
 
 # Define .cmake module for toolchain compile flags that does holds true for all ARM projects
-set(CMAKE_TOOLCHAIN_FILE            gcc-arm-none-eabi)# This path is defined in the list() function above
+set(CMAKE_TOOLCHAIN_FILE            gcc-arm-none-eabi)
 
 # ------------------- PROJECT SETUP -------------------
 project("ClosetController")
