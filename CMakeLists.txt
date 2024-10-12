@@ -30,6 +30,7 @@ include(STM32G0_PARA)
 
 # ------------------- Driver Setup -------------------
 set(CMSIS_DIR drivers/CMSIS)
+set(RTOS_DIR drivers/FreeRTOS)
 set(HAL_DIR drivers/HAL)
 set(SRC_DIR src)
 
@@ -38,6 +39,11 @@ set(SRC_DIR src)
 set(include_list ${include_list}
     ${CMSIS_DIR}/Include
     ${CMSIS_DIR}/Device/ST/STM32G0xx/Include
+
+	${RTOS_DIR}/Source/include
+	${RTOS_DIR}/Source/CMSIS_RTOS
+	${RTOS_DIR}/Source/portable/GCC/ARM_CM0
+
     ${HAL_DIR}/GPIO
 	${HAL_DIR}/USART
 	${SRC_DIR}
@@ -47,6 +53,17 @@ set(include_list ${include_list}
 set (source_list
 	${CMSIS_DIR}/Startup/startup_stm32g070xx.s
 	
+	${RTOS_DIR}/Source/croutine.c
+	${RTOS_DIR}/Source/event_groups.c
+	${RTOS_DIR}/Source/list.c
+	${RTOS_DIR}/Source/queue.c
+	${RTOS_DIR}/Source/stream_buffer.c
+	${RTOS_DIR}/Source/tasks.c
+	${RTOS_DIR}/Source/timers.c
+	${RTOS_DIR}/Source/CMSIS_RTOS/cmsis_os.c
+	${RTOS_DIR}/Source/portable/MemMang/heap_4.c
+	${RTOS_DIR}/Source/portable/GCC/ARM_CM0/port.c
+
 	${HAL_DIR}/GPIO/gpio.cpp
 	${HAL_DIR}/USART/usart.cpp
 	
