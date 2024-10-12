@@ -21,19 +21,15 @@ set(CMAKE_TOOLCHAIN_FILE            gcc-arm-none-eabi)
 project("ClosetController")
 enable_language(C CXX ASM)
 
-# ------------------- Linker File ------------------- 
-set(linker_script_SRC               ${CMAKE_CURRENT_SOURCE_DIR}/STM32G070RBTx_FLASH.ld)
+set(BOARD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/boards)
+set(CMSIS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/drivers/CMSIS)
+set(RTOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/drivers/FreeRTOS)
+set(HAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/drivers/HAL)
+set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# -------------------  MCU Configs ------------------- 
-# include(MAKE NEW PARA FOR NEW MCU CONF)
+# ------------------- MCU Config ------------------- 
+set(linker_script_SRC               ${BOARD_DIR}/stm32g0x/STM32G070RBTx_FLASH.ld)
 include(STM32G0_PARA)
-
-# ------------------- Driver Setup -------------------
-set(CMSIS_DIR drivers/CMSIS)
-set(RTOS_DIR drivers/FreeRTOS)
-set(HAL_DIR drivers/HAL)
-set(SRC_DIR src)
-
 
 # ------------------- Includes Setup -------------------
 set(include_list ${include_list}
