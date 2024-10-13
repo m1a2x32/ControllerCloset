@@ -69,6 +69,7 @@ namespace HAL::GPIO{
                 GPIO_OUTPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin);
                 void set_pin();
                 void reset_pin();
+                void toggle_pin();
                 
                 void set_output_type(TYPE_REG oTypeReg);
                 void set_output_speed(SPEED_REG oSpeedReg);

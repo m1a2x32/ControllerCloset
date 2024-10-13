@@ -1,4 +1,7 @@
 #include <main.h>
+#include "FreeRTOS.h"
+#include "cmsis_os.h"
+#include <led_control.h>
 
 void SystemClockInit(){
 	/* HSI conf and activation */
@@ -16,18 +19,33 @@ void SystemClockInit(){
 	while(READ_BIT(RCC->CFGR, RCC_CFGR_SWS) != 0x00000000U);
 }
 
+void StayAlive(void *pvParameters){
+	reset_all_leds();
+
+	ledGreen.toggle_pin();
+	while(1){
+		// Reset Watchdog
+	}
+}
+
 int main(void)
 {
 	SystemClockInit();
+	xTaskCreate(StayAlive, "StayAliveWatchdog", 128, NULL, 1, NULL);
+
+    vTaskStartScheduler();
     /* Loop forever */
 	while (1)
 	{
-		
+
 	}
 }
 
 void HardFault_Handler(void)
 {	
+	__disable_irq();
+	reset_all_leds();
+	ledRed.toggle_pin();
 	while (1){
 
 	}

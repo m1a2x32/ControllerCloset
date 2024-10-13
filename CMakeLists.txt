@@ -42,7 +42,9 @@ set(include_list ${include_list}
 
     ${HAL_DIR}/GPIO
 	${HAL_DIR}/USART
+
 	${SRC_DIR}
+	${SRC_DIR}/leds
 )
 
 # ------------------- LIST SOURCE FILES HERE -------------------
@@ -63,11 +65,13 @@ set (source_list
 	${HAL_DIR}/GPIO/gpio.cpp
 	${HAL_DIR}/USART/usart.cpp
 	
-	${SRC_DIR}/main.c
+	${SRC_DIR}/main.cpp
 	${SRC_DIR}/syscalls.c
 	${SRC_DIR}/sysmem.c
 	${SRC_DIR}/system_stm32g0xx.c
-	${SRC_DIR}/soil_sensor/communication.cpp
+
+	${SRC_DIR}/leds/led_control.cpp
+	${SRC_DIR}/communication/soil_sensor.cpp
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${source_list})

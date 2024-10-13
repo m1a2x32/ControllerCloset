@@ -4,8 +4,8 @@
 namespace HAL::GPIO {
 
     IO::IO(AVAILABLE_PORTS _ioPort, uint8_t _ioPin) {
+        if(_ioPin > 15) std::range_error("Pin number not available");
         port    = get_port_instance(_ioPort);
-        if(pinNr > 15) std::range_error("Pin number not available");
         pinNr   = _ioPin;
     }
 
@@ -17,9 +17,7 @@ namespace HAL::GPIO {
     }
 
     void IO::set_io_type(GPIO_MODES reg){
-        CLEAR_BIT(port->MODER, (reg << (pinNr << 1)));
-        if (reg == INPUT_MODE) return;
-
+        CLEAR_BIT(port->MODER, (0x3 << (pinNr << 1)));
         SET_BIT(port->MODER, (reg << (pinNr << 1)));
     }
 
@@ -61,15 +59,23 @@ namespace HAL::GPIO {
 
         GPIO_OUTPUT::GPIO_OUTPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin) : IO(_ioPort, _ioPin){
             set_io_type(GPIO_MODES::OUTPUT_MODE);
+            set_pin();
         }
 
         void GPIO_OUTPUT::set_pin(){
             // Todo: double check this work, if not bsrr reg
-            SET_BIT(port->ODR, (1 << pinNr));
+            SET_BIT(port->BSRR, (1 << pinNr));
         }
 
         void GPIO_OUTPUT::reset_pin(){
-            CLEAR_BIT(port->ODR, (1 << pinNr));
+            SET_BIT(port->BSRR, (1 << (pinNr + 16)));
+        }
+
+        void GPIO_OUTPUT::toggle_pin(){
+            if (READ_BIT(port->ODR, (1 << pinNr)))
+                reset_pin();
+            else
+                set_pin();
         }
 
         void GPIO_OUTPUT::set_output_type(TYPE_REG oTypeReg){

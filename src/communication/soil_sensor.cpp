@@ -3,7 +3,7 @@
 
 HAL::UART::USART soilSensorUsart( HAL::UART::AVAILABLE_USARTS::USART_1, nullptr, nullptr);
 
-void communication_setup(){
+void communication_task(){
     // GPIO Config
     HAL::GPIO::AF::GPIO_AF  usartTx(HAL::GPIO::AVAILABLE_PORTS::PORTD, 8), 
                             usartRx(HAL::GPIO::AVAILABLE_PORTS::PORTD, 9),
@@ -21,6 +21,10 @@ void communication_setup(){
 
     NVIC_EnableIRQ(USART3_4_IRQn);
     NVIC_SetPriority(USART3_4_IRQn, 3);
+
+    while(1){
+
+    }
 }
 
 void USART3_4_IRQHandler(){
