@@ -10,15 +10,11 @@ namespace HAL::GPIO {
     }
 
     void IO::config_pupd(PUPD_REG reg){
-        CLEAR_BIT(port->PUPDR, (reg << (pinNr << 1)));
-        if (reg == NO_PU_PD) return;
-
-        SET_BIT(port->PUPDR, (reg << (pinNr << 1)));
+        MODIFY_REG(port->PUPDR, (0x2 << (pinNr << 1)), (reg << (pinNr << 1)));
     }
 
     void IO::set_io_type(GPIO_MODES reg){
-        CLEAR_BIT(port->MODER, (0x3 << (pinNr << 1)));
-        SET_BIT(port->MODER, (reg << (pinNr << 1)));
+        MODIFY_REG(port->PUPDR, (0x3UL << (pinNr << 1)), (reg << (pinNr << 1)));
     }
 
     GPIO_TypeDef *IO::get_port_instance(AVAILABLE_PORTS target) {
@@ -59,7 +55,6 @@ namespace HAL::GPIO {
 
         GPIO_OUTPUT::GPIO_OUTPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin) : IO(_ioPort, _ioPin){
             set_io_type(GPIO_MODES::OUTPUT_MODE);
-            set_pin();
         }
 
         void GPIO_OUTPUT::set_pin(){
@@ -71,25 +66,20 @@ namespace HAL::GPIO {
             SET_BIT(port->BSRR, (1 << (pinNr + 16)));
         }
 
+        bool GPIO_OUTPUT::read_output(){
+            return READ_BIT(port->ODR, (1 << pinNr));
+        }
+
         void GPIO_OUTPUT::toggle_pin(){
-            if (READ_BIT(port->ODR, (1 << pinNr)))
-                reset_pin();
-            else
-                set_pin();
+            read_output() == true ? reset_pin() : set_pin();
         }
 
         void GPIO_OUTPUT::set_output_type(TYPE_REG oTypeReg){
-            CLEAR_BIT(port->OTYPER, (oTypeReg << pinNr));
-            if (oTypeReg == PUSH_PULL) return;
-
-            SET_BIT(port->OTYPER, (oTypeReg << pinNr));
+            MODIFY_REG(port->OTYPER, (0x1UL << pinNr), (oTypeReg << pinNr));
         }
 
         void GPIO_OUTPUT::set_output_speed(SPEED_REG oSpeedReg){
-            CLEAR_BIT(port->OSPEEDR, (oSpeedReg << (pinNr << 1)));
-            if(oSpeedReg == VERY_LOW_SPEED) return;
-
-            SET_BIT(port->OSPEEDR, (oSpeedReg << (pinNr << 1)));
+            MODIFY_REG(port->OSPEEDR, (0x3UL << (pinNr << 1)), (oSpeedReg << (pinNr << 1)));
         }
     }
 
@@ -99,18 +89,9 @@ namespace HAL::GPIO {
         }
 
         void GPIO_AF::set_alternate_function(ALTERNTAE_FUNCTIONS nr){
-            if (pinNr <= 7){
-                CLEAR_BIT(port->AFR[0], (nr << (pinNr << 2)));
-                if(nr == AF0) return;
-
-                SET_BIT(port->AFR[0], (nr << (pinNr << 2)));
-            } else {
-                CLEAR_BIT(port->AFR[1], (nr << (pinNr << 2)));
-                if(nr == AF0) return;
-
-                SET_BIT(port->AFR[1], (nr << (pinNr << 2)));
-            }
-            
+            uint8_t reg = 0;
+            if (pinNr > 7)reg = 1;
+            MODIFY_REG(port->AFR[reg], (0x7UL << (pinNr << 2)), (nr << (pinNr << 2)));
         }
     }
 }
