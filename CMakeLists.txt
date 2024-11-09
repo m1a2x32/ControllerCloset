@@ -26,6 +26,7 @@ set(CMSIS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/drivers/CMSIS)
 set(RTOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/drivers/FreeRTOS)
 set(HAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/drivers/HAL)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 
 # ------------------- MCU Config ------------------- 
 set(linker_script_SRC               ${BOARD_DIR}/stm32g0x/STM32G070RBTx_FLASH.ld)
@@ -44,7 +45,8 @@ set(include_list ${include_list}
 	${HAL_DIR}/USART
 
 	${SRC_DIR}
-	${SRC_DIR}/leds
+
+	${LIBS_DIR}/RGBLed
 )
 
 # ------------------- LIST SOURCE FILES HERE -------------------
@@ -69,9 +71,9 @@ set (source_list
 	${SRC_DIR}/syscalls.c
 	${SRC_DIR}/sysmem.c
 	${SRC_DIR}/system_stm32g0xx.c
+	# ${SRC_DIR}/communication/soil_sensor.cpp
 
-	${SRC_DIR}/leds/led_control.cpp
-	${SRC_DIR}/communication/soil_sensor.cpp
+	${LIBS_DIR}/RGBLed/Led.cpp
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${source_list})

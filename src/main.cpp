@@ -1,14 +1,18 @@
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 #include "main.hpp"
-#include "led_control.hpp"
+#include "Led.hpp"
 
 extern "C" int main() {
     app_main();
     return 0;
 }
 
+Device::Led::RGBLed rgbHandler;
+
 void SystemClockInit(){
+	/* Todo: Move to HAL lib */
+	
 	/* HSI conf and activation */
 	SET_BIT(RCC->CR, RCC_CR_HSION);
 	while (!(READ_BIT(RCC->CR, RCC_CR_HSIRDY) == (RCC_CR_HSIRDY)));
@@ -22,12 +26,11 @@ void SystemClockInit(){
 	/* Sysclk activation on the HSI */
 	MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, 0x00000000U);
 	while(READ_BIT(RCC->CFGR, RCC_CFGR_SWS) != 0x00000000U);
+	SystemCoreClockUpdate();
 }
 
 void StayAlive(void *pvParameters){
-	reset_all_leds();
-
-	ledGreen.toggle_pin();
+	rgbHandler.set_color(Device::Led::Colors::GREEN);
 	while(1){
 		// Reset Watchdog
 	}
@@ -49,8 +52,7 @@ void app_main() {
 void HardFault_Handler(void)
 {	
 	__disable_irq();
-	reset_all_leds();
-	ledRed.toggle_pin();
+	rgbHandler.set_color(Device::Led::Colors::RED);
 	while (1){
 
 	}

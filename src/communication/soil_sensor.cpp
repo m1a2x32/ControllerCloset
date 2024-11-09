@@ -1,5 +1,5 @@
 #include "main.hpp"
-#include <usart.h>
+#include "usart.hpp"
 
 HAL::UART::USART soilSensorUsart( HAL::UART::AVAILABLE_USARTS::USART_1, nullptr, nullptr);
 

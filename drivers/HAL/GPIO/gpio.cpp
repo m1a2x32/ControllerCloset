@@ -1,4 +1,4 @@
-#include "gpio_base.hpp"
+#include "gpio.hpp"
 #include <stdexcept>
 
 namespace HAL::GPIO {
@@ -14,7 +14,7 @@ namespace HAL::GPIO {
     }
 
     void IO::set_io_type(GPIO_MODES reg){
-        MODIFY_REG(port->PUPDR, (0x3UL << (pinNr << 1)), (reg << (pinNr << 1)));
+        MODIFY_REG(port->MODER, (0x3UL << (pinNr << 1)), (reg << (pinNr << 1)));
     }
 
     GPIO_TypeDef *IO::get_port_instance(AVAILABLE_PORTS target) {

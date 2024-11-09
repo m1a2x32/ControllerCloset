@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gpio_base.hpp"
+#include "gpio.hpp"
 
 namespace HAL::UART{
 
