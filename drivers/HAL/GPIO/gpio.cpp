@@ -1,4 +1,4 @@
-#include "gpio_base.h"
+#include "gpio_base.hpp"
 #include <stdexcept>
 
 namespace HAL::GPIO {

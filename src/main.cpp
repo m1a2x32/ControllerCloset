@@ -1,7 +1,12 @@
-#include <main.h>
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
-#include <led_control.h>
+#include "main.hpp"
+#include "led_control.hpp"
+
+extern "C" int main() {
+    app_main();
+    return 0;
+}
 
 void SystemClockInit(){
 	/* HSI conf and activation */
@@ -28,8 +33,7 @@ void StayAlive(void *pvParameters){
 	}
 }
 
-int main(void)
-{
+void app_main() {
 	SystemClockInit();
 	xTaskCreate(StayAlive, "StayAliveWatchdog", 128, NULL, 1, NULL);
 
@@ -40,6 +44,7 @@ int main(void)
 
 	}
 }
+
 
 void HardFault_Handler(void)
 {	
@@ -59,6 +64,5 @@ void NMI_Handler(void)
 }
 
 void Reset_Handler(void){
-	SystemClockInit();
-    main();  // Call the main application
+
 }
