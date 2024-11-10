@@ -8,7 +8,11 @@ extern "C" int main() {
 	return 0;
 }
 
-Device::Led::RGBLed rgbHandler;
+Device::Led::RGBLed rgbHandler(
+	new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 8), // R
+	new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 9), // G
+	new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 7)  // B
+);
 
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {

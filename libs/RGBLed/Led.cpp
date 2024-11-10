@@ -3,10 +3,10 @@
 // Note: *** Output logic inversed on LEDs ***
 namespace Device::Led{
 
-    RGBLed::RGBLed()
-       : ledBlue(AVAILABLE_PORTS::PORTB, 7),  // Initialize ledBlue with PORTB and pin 7
-         ledRed(AVAILABLE_PORTS::PORTB, 8),   // Initialize ledRed with PORTB and pin 8
-         ledGreen(AVAILABLE_PORTS::PORTB, 9),  // Initialize ledGreen with PORTB and pin 9
+    RGBLed::RGBLed(GPIO_OUTPUT *r, GPIO_OUTPUT *g, GPIO_OUTPUT *b)
+       : ledBlue(b),  // Initialize ledBlue with PORTB and pin 7
+         ledRed(r),   // Initialize ledRed with PORTB and pin 8
+         ledGreen(g),  // Initialize ledGreen with PORTB and pin 9
          requested_color(Color())
     {
        set_off();
@@ -25,23 +25,23 @@ namespace Device::Led{
     void RGBLed::update_leds() {
         // Set blue LED
         if (requested_color.blue > 0) {
-            ledBlue.reset_pin();
+            ledBlue->reset_pin();
         } else {
-            ledBlue.set_pin();
+            ledBlue->set_pin();
         }
 
         // Set red LED
         if (requested_color.red > 0) {
-            ledRed.reset_pin();
+            ledRed->reset_pin();
         } else {
-            ledRed.set_pin();
+            ledRed->set_pin();
         }
 
         // Set green LED
         if (requested_color.green > 0) {
-            ledGreen.reset_pin();
+            ledGreen->reset_pin();
         } else {
-            ledGreen.set_pin();
+            ledGreen->set_pin();
         }
     }
 }

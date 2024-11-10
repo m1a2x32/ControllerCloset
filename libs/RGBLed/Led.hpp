@@ -1,7 +1,7 @@
 #pragma once
 #include "gpio.hpp"
 
-using namespace HAL::GPIO;
+using namespace HAL::GPIO::OUTPUT;
 
 namespace Device::Led{
     
@@ -26,7 +26,11 @@ namespace Device::Led{
 
     class RGBLed{
         public:
-            RGBLed();
+            RGBLed(
+                GPIO_OUTPUT *r,
+                GPIO_OUTPUT *g, 
+                GPIO_OUTPUT *b
+            );
             /**
              * Set color automatically sets the target color for the led.
              */
@@ -37,7 +41,7 @@ namespace Device::Led{
              */
             void set_off();
         private:
-            OUTPUT::GPIO_OUTPUT ledBlue, ledRed, ledGreen;
+            GPIO_OUTPUT *ledBlue, *ledRed, *ledGreen;
             Color requested_color;
 
             /**
