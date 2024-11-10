@@ -4,20 +4,15 @@
 
 using namespace HAL::UART;
 
-USART soilSensorUsart;
+USART soilSensorUsart(
+    USART_ID::USART_1,
+    new HAL::GPIO::AF::GPIO_AF(HAL::GPIO::AVAILABLE_PORTS::PORTD, 5, HAL::GPIO::AF::AF1),// rx
+    new HAL::GPIO::AF::GPIO_AF(HAL::GPIO::AVAILABLE_PORTS::PORTD, 6, HAL::GPIO::AF::AF1) // tx
+);
 
-void communication_task(void *pvParameters){
-    // GPIO Config
-    auto usartTx  = std::make_unique<HAL::GPIO::AF::GPIO_AF>(HAL::GPIO::AVAILABLE_PORTS::PORTD, 8);
-    auto usartRx  = std::make_unique<HAL::GPIO::AF::GPIO_AF>(HAL::GPIO::AVAILABLE_PORTS::PORTD, 9);
-    auto usartRts = std::make_unique<HAL::GPIO::AF::GPIO_AF>(HAL::GPIO::AVAILABLE_PORTS::PORTD, 12);
-    usartTx->set_alternate_function(HAL::GPIO::AF::AF7);
-    usartRx->set_alternate_function(HAL::GPIO::AF::AF7);
-    usartRts->set_alternate_function(HAL::GPIO::AF::AF7);
-    
+void communication_task(void *argument){
     // USART Config
-    soilSensorUsart = USART(USART_ID::USART_1, std::move(usartRx), std::move(usartTx));    
-    soilSensorUsart.enable_rs485_driver(std::move(usartRts));
+    soilSensorUsart.enable_rs485_driver(new HAL::GPIO::AF::GPIO_AF(HAL::GPIO::AVAILABLE_PORTS::PORTD, 4, HAL::GPIO::AF::AF1));
     soilSensorUsart.configure_baud_rate(SystemCoreClock, 115200);
 
     soilSensorUsart.set_cr1_flag(CTRL_REG_1::ENABLE_RX);
@@ -31,7 +26,7 @@ void communication_task(void *pvParameters){
     NVIC_SetPriority(USART3_4_IRQn, 3);
 
     while(1){
-		vTaskDelay(pdMS_TO_TICKS(200));
+		osDelay(2000);
     }
 }
 

@@ -5,15 +5,10 @@ using namespace HAL::GPIO::AF;
 
 namespace HAL::UART{
 
-    USART::USART(USART_ID instance, std::unique_ptr<HAL::GPIO::AF::GPIO_AF> _rx, std::unique_ptr<HAL::GPIO::AF::GPIO_AF> _tx){
-        if (!_tx || !_rx) {
-            std::logic_error("Pins not assigned");
-        }
+    USART::USART(USART_ID instance, HAL::GPIO::AF::GPIO_AF *_rx, HAL::GPIO::AF::GPIO_AF *_tx)
+        : usartInst(get_usart_instance(instance)), rx(_rx), tx(_tx)
+    {
 
-        rx = std::move(_rx);
-        tx = std::move(_tx);
-
-        usartInst = get_usart_instance(instance);
     }
 
     USART_TypeDef *USART::get_usart_instance(USART_ID target){
@@ -42,9 +37,8 @@ namespace HAL::UART{
     }
 
 
-    void USART::enable_rs485_driver(std::unique_ptr<HAL::GPIO::AF::GPIO_AF> rtsPin){
-        if(!rtsPin) std::logic_error("RTS pin not assigned");
-        rts = std::move(rtsPin);
+    void USART::enable_rs485_driver(HAL::GPIO::AF::GPIO_AF *rtsPin){
+        rts = rtsPin;
         SET_BIT(usartInst->CR3, USART_CR3_DEM);
     }
 

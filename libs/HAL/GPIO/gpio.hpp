@@ -92,7 +92,8 @@ namespace HAL::GPIO{
 
         class GPIO_AF : public IO {
             public:
-                GPIO_AF(AVAILABLE_PORTS _ioPort, uint8_t _ioPin);
+                GPIO_AF(AVAILABLE_PORTS _ioPort, uint8_t _ioPin, ALTERNTAE_FUNCTIONS nr);
+            protected:
                 void set_alternate_function(ALTERNTAE_FUNCTIONS nr);
         };
     }

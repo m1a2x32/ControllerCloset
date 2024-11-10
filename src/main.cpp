@@ -5,7 +5,7 @@
 
 extern "C" int main() {
     app_main();
-    return 0;
+	return 0;
 }
 
 Device::Led::RGBLed rgbHandler;
@@ -14,6 +14,13 @@ osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "StayAlive",
   .stack_size = 128,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
+osThreadId_t commThreadHandle;
+const osThreadAttr_t commThreadHandle_attributes = {
+  .name = "Communication",
+  .stack_size = 300,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -40,6 +47,7 @@ void StayAlive(void *argument){
 	rgbHandler.set_color(Device::Led::Colors::GREEN);
 	while(1){
 		// Reset Watchdog
+		osDelay(1000);
 	}
 }
 
@@ -49,7 +57,8 @@ void app_main() {
 	// Initialize FreeRTOS and threads
 	osKernelInitialize();
 	defaultTaskHandle = osThreadNew(StayAlive, NULL, &defaultTask_attributes);
-
+	commThreadHandle = osThreadNew(communication_task,NULL,&commThreadHandle_attributes);
+	
 	osKernelStart();
 
     /* Loop forever */
@@ -59,16 +68,14 @@ void app_main() {
 	}
 }
 
-
-void HardFault_Handler(void)
+extern "C" void HardFault_Handler(void)
 {	
 	__disable_irq();
 	rgbHandler.set_color(Device::Led::Colors::RED);
-	while (1){
-
-	}
+	NVIC_SystemReset();
 }
-void NMI_Handler(void)
+
+extern "C" void NMI_Handler(void)
 {
 	while (1)
 	{
@@ -76,6 +83,12 @@ void NMI_Handler(void)
 	}
 }
 
-void Reset_Handler(void){
-
+extern "C" void WWDG_IRQHandler(void){
+	rgbHandler.set_color(Device::Led::Colors::RED);
 }
+
+// extern "C" void Reset_Handler(void){
+// 	__disable_irq();
+// 	rgbHandler.set_color(Device::Led::Colors::RED);
+// 	NVIC_SystemReset();
+// }

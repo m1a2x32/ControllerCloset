@@ -6,5 +6,6 @@
 #include <stm32g0xx.h>
 
 extern "C" void app_main();
+extern void communication_task(void *argument);
 
 #endif

@@ -84,8 +84,9 @@ namespace HAL::GPIO {
     }
 
     namespace AF {
-        GPIO_AF::GPIO_AF(AVAILABLE_PORTS _ioPort, uint8_t _ioPin) : IO(_ioPort, _ioPin){
+        GPIO_AF::GPIO_AF(AVAILABLE_PORTS _ioPort, uint8_t _ioPin, ALTERNTAE_FUNCTIONS nr) : IO(_ioPort, _ioPin){
             set_io_type(GPIO_MODES::AF_MODE);
+            set_alternate_function(nr);
         }
 
         void GPIO_AF::set_alternate_function(ALTERNTAE_FUNCTIONS nr){

@@ -13,7 +13,7 @@
                 "interface/stlink.cfg",
                 "target/stm32g0x.cfg"
             ],
-            "preLaunchTask": "Build with CMake",
+            "preLaunchTask": "Build and Compile",
             "runToEntryPoint": "main",
             "svdFile": "${workspaceFolder}/boards/stm32g0x/stm32g070.svd",
             "postLaunchCommands": [

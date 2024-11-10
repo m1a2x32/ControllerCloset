@@ -10,11 +10,14 @@ message("Build type: "              ${CMAKE_BUILD_TYPE})
 set(CMAKE_C_STANDARD                17)
 set(CMAKE_C_STANDARD_REQUIRED       ON)
 set(CMAKE_C_EXTENSIONS              ON)
+message("C Standard: ${CMAKE_C_STANDARD}")
+
 # C++ version
 set(CMAKE_CXX_STANDARD              20)
 set(CMAKE_CXX_STANDARD_REQUIRED     ON)
-set(CMAKE_CXX_EXTENSIONS            ON)
+set(CMAKE_CXX_EXTENSIONS            OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS   ON)
+message("C++ Standard: ${CMAKE_CXX_STANDARD}")
 
 # Define .cmake module for toolchain compile flags that does holds true for all ARM projects
 set(CMAKE_TOOLCHAIN_FILE            gcc-arm-none-eabi)

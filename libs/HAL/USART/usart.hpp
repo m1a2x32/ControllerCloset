@@ -23,22 +23,21 @@ namespace HAL::UART{
 
     class USART {
         public:
-            USART() = default;
             
             USART(
                 USART_ID instance, 
-                std::unique_ptr<HAL::GPIO::AF::GPIO_AF> _rx, 
-                std::unique_ptr<HAL::GPIO::AF::GPIO_AF> _tx
+                HAL::GPIO::AF::GPIO_AF *_rx, 
+                HAL::GPIO::AF::GPIO_AF *_tx
             );
 
             // Configuration
             void configure_baud_rate(uint32_t sysclock_mhz, uint32_t baud);
-            void enable_rs485_driver(std::unique_ptr<HAL::GPIO::AF::GPIO_AF> rtsPin);
+            void enable_rs485_driver(HAL::GPIO::AF::GPIO_AF *rtsPin);
             void set_cr1_flag(CTRL_REG_1 flg);
             USART_TypeDef* usartInst = nullptr;
             std::deque<uint8_t> rxBuff, txBuff;
         protected:
-            std::unique_ptr<HAL::GPIO::AF::GPIO_AF> rx, tx, rts;
+            HAL::GPIO::AF::GPIO_AF *rx, *tx, *rts;
             USART_TypeDef *get_usart_instance(USART_ID target);
     };
 }
