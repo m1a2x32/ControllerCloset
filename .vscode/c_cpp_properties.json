@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "STM32",
+            "includePath": [
+                "${workspaceFolder}/**",
+            ],
+            "defines": [
+                "STM32G070xx"
+            ],
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc"
+        }
+    ],
+    "version": 4
+}

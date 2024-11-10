@@ -1,5 +1,2 @@
-# IDE Settings
-.vscode
-
 # Cmake output
 build/*
