@@ -1,0 +1,81 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+            "label": "Build with CMake",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "-G", "Ninja",
+                "-S", ".",
+                "-B", "build/Debug",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "--debug-output"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build and Compile",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--build", "build/Debug",
+                "--config", "Debug"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Clean Build Directory",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--build", "build",
+                "--target", "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Flash STM",
+            "type": "process",
+            "command": "st-flash",
+            "args": [
+                "write",
+                "./build/Debug/ClosetController.bin",
+                "0x8000000"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "dependsOn": "Build and Compile",
+            "problemMatcher": []
+        },
+	]
+}

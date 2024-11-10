@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug STM32G070",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "device": "STM32G070xx",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/Debug/ClosetController.elf",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32g0x.cfg"
+            ],
+            "preLaunchTask": "Build with CMake",
+            "runToEntryPoint": "main",
+            "svdFile": "${workspaceFolder}/boards/stm32g0x/stm32g070.svd",
+            "postLaunchCommands": [
+                "monitor reset halt",  // Reset the target device before starting
+                "monitor flash write_image erase ${workspaceFolder}/build/Debug/ClosetController.elf"  // Flash the ELF file
+            ],
+        }
+    ]
+}
