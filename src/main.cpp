@@ -1,5 +1,5 @@
 #include "FreeRTOS.h"
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
 #include "main.hpp"
 #include "Led.hpp"
 
@@ -9,6 +9,13 @@ extern "C" int main() {
 }
 
 Device::Led::RGBLed rgbHandler;
+
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "StayAlive",
+  .stack_size = 128,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 void SystemClockInit(){
 	/* Todo: Move to HAL lib */
@@ -29,7 +36,7 @@ void SystemClockInit(){
 	SystemCoreClockUpdate();
 }
 
-void StayAlive(void *pvParameters){
+void StayAlive(void *argument){
 	rgbHandler.set_color(Device::Led::Colors::GREEN);
 	while(1){
 		// Reset Watchdog
@@ -38,9 +45,13 @@ void StayAlive(void *pvParameters){
 
 void app_main() {
 	SystemClockInit();
-	xTaskCreate(StayAlive, "StayAliveWatchdog", 128, NULL, 1, NULL);
 
-    vTaskStartScheduler();
+	// Initialize FreeRTOS and threads
+	osKernelInitialize();
+	defaultTaskHandle = osThreadNew(StayAlive, NULL, &defaultTask_attributes);
+
+	osKernelStart();
+
     /* Loop forever */
 	while (1)
 	{

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
+cmake_policy(SET CMP0156 NEW)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 message("Build type: "              ${CMAKE_BUILD_TYPE})
 
@@ -9,7 +11,7 @@ set(CMAKE_C_STANDARD                17)
 set(CMAKE_C_STANDARD_REQUIRED       ON)
 set(CMAKE_C_EXTENSIONS              ON)
 # C++ version
-set(CMAKE_CXX_STANDARD              17)
+set(CMAKE_CXX_STANDARD              20)
 set(CMAKE_CXX_STANDARD_REQUIRED     ON)
 set(CMAKE_CXX_EXTENSIONS            ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS   ON)
@@ -21,64 +23,46 @@ set(CMAKE_TOOLCHAIN_FILE            gcc-arm-none-eabi)
 project("ClosetController")
 enable_language(C CXX ASM)
 
-set(BOARD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/boards)
-set(CMSIS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/drivers/CMSIS)
-set(RTOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/drivers/FreeRTOS)
-set(HAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/drivers/HAL)
-set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+set(BOARD_DIR 						${CMAKE_CURRENT_SOURCE_DIR}/boards)
+set(LIBS_DIR 						${CMAKE_CURRENT_SOURCE_DIR}/libs)
+set(HAL_DIR 						${CMAKE_CURRENT_SOURCE_DIR}/libs/HAL)
+set(SRC_DIR 						${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+add_subdirectory(${BOARD_DIR}/stm32g0x/STM32CubeG0)
 # ------------------- MCU Config ------------------- 
 set(linker_script_SRC               ${BOARD_DIR}/stm32g0x/STM32G070RBTx_FLASH.ld)
 include(STM32G0_PARA)
 
+# ------------------- LIST SOURCE -------------------
+file(GLOB source_list
+	${HAL_DIR}/GPIO/*.cpp
+    ${HAL_DIR}/USART/*.cpp
+	${LIBS_DIR}/RGBLed/*.cpp
+    ${SRC_DIR}/*.c
+	${SRC_DIR}/*.cpp
+	${SRC_DIR}/communication/*.cpp
+)
+
+add_executable(${CMAKE_PROJECT_NAME} 
+	${source_list}
+	${BOARD_DIR}/stm32g0x/startup_stm32g070xx.s
+)
+
 # ------------------- Includes Setup -------------------
-set(include_list ${include_list}
-    ${CMSIS_DIR}/Include
-    ${CMSIS_DIR}/Device/ST/STM32G0xx/Include
-
-	${RTOS_DIR}/Source/include
-	${RTOS_DIR}/Source/CMSIS_RTOS
-	${RTOS_DIR}/Source/portable/GCC/ARM_CM0
-
-    ${HAL_DIR}/GPIO
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE 
+	${HAL_DIR}/GPIO
 	${HAL_DIR}/USART
-
-	${SRC_DIR}
-
 	${LIBS_DIR}/RGBLed
+	${SRC_DIR}
 )
 
-# ------------------- LIST SOURCE FILES HERE -------------------
-set (source_list
-	${CMSIS_DIR}/Startup/startup_stm32g070xx.s
-	
-	${RTOS_DIR}/Source/croutine.c
-	${RTOS_DIR}/Source/event_groups.c
-	${RTOS_DIR}/Source/list.c
-	${RTOS_DIR}/Source/queue.c
-	${RTOS_DIR}/Source/stream_buffer.c
-	${RTOS_DIR}/Source/tasks.c
-	${RTOS_DIR}/Source/timers.c
-	${RTOS_DIR}/Source/CMSIS_RTOS/cmsis_os.c
-	${RTOS_DIR}/Source/portable/MemMang/heap_4.c
-	${RTOS_DIR}/Source/portable/GCC/ARM_CM0/port.c
-
-	${HAL_DIR}/GPIO/gpio.cpp
-	${HAL_DIR}/USART/usart.cpp
-	
-	${SRC_DIR}/main.cpp
-	${SRC_DIR}/syscalls.c
-	${SRC_DIR}/sysmem.c
-	${SRC_DIR}/system_stm32g0xx.c
-	# ${SRC_DIR}/communication/soil_sensor.cpp
-
-	${LIBS_DIR}/RGBLed/Led.cpp
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE 
+	STM32CubeG0
 )
 
-add_executable(${CMAKE_PROJECT_NAME} ${source_list})
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${include_list})
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE ${compiler_define})
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE 
+	${compiler_define}
+)
 
 # Compiler options
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
@@ -92,6 +76,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Linker options
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+	-g
 	-T${linker_script_SRC}
 	${CPU_PARAMETERS}
 	-Wl,-Map=${CMAKE_PROJECT_NAME}.map
@@ -122,3 +107,6 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 	COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin
 )
+
+set(CMAKE_C_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
