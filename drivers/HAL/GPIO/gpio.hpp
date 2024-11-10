@@ -34,7 +34,7 @@ namespace HAL::GPIO{
             IO(AVAILABLE_PORTS _ioPort, uint8_t _ioPin);
             void config_pupd(PUPD_REG reg);
         protected:
-            GPIO_TypeDef *port;
+            GPIO_TypeDef *port = nullptr;
             uint8_t pinNr;
 
             void set_io_type(GPIO_MODES reg);
