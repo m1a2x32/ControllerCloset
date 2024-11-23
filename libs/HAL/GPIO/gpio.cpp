@@ -10,7 +10,7 @@ namespace HAL::GPIO {
     }
 
     void IO::config_pupd(PUPD_REG reg){
-        MODIFY_REG(port->PUPDR, (0x2 << (pinNr << 1)), (reg << (pinNr << 1)));
+        MODIFY_REG(port->PUPDR, (0x3UL << (pinNr << 1)), (reg << (pinNr << 1)));
     }
 
     void IO::set_io_type(GPIO_MODES reg){
@@ -90,9 +90,12 @@ namespace HAL::GPIO {
         }
 
         void GPIO_AF::set_alternate_function(ALTERNTAE_FUNCTIONS nr){
-            uint8_t reg = 0;
-            if (pinNr > 7)reg = 1;
-            MODIFY_REG(port->AFR[reg], (0x7UL << (pinNr << 2)), (nr << (pinNr << 2)));
+            if (pinNr <= 7){
+                MODIFY_REG(port->AFR[0], (0x7UL << (pinNr << 2)), (nr << (pinNr << 2)));
+            } else {
+                uint8_t pin_to_write = pinNr - 7;
+                MODIFY_REG(port->AFR[1], (0x7UL << (pin_to_write << 2)), (nr << (pin_to_write << 2)));
+            }
         }
     }
 }

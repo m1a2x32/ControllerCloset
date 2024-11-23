@@ -19,8 +19,8 @@ namespace HAL::GPIO{
     enum GPIO_MODES{
         INPUT_MODE   = 0x0,
         OUTPUT_MODE  = GPIO_MODER_MODE0_0,
-        ANALOG_MODE  = GPIO_MODER_MODE0_1,
-        AF_MODE      = GPIO_MODER_MODE0,
+        AF_MODE      = GPIO_MODER_MODE0_1,
+        ANALOG_MODE  = GPIO_MODER_MODE0,
     };
 
     enum PUPD_REG{
