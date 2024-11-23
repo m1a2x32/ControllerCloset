@@ -3,65 +3,64 @@
 #include "main.hpp"
 #include "Led.hpp"
 
+Device::Led::RGBLed* ledHandle;
+
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "StayAlive",
+  .stack_size = 257,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
 extern "C" int main() {
     app_main();
 	return 0;
 }
 
-Device::Led::RGBLed rgbHandler(
-	new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 8), // R
-	new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 9), // G
-	new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 7)  // B
-);
-
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "StayAlive",
-  .stack_size = 128,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-
-osThreadId_t commThreadHandle;
-const osThreadAttr_t commThreadHandle_attributes = {
-  .name = "Communication",
-  .stack_size = 300,
-  .priority = (osPriority_t) osPriorityNormal,
-};
 
 void SystemClockInit(){
-	/* Todo: Move to HAL lib */
-	
-	/* HSI conf and activation */
-	SET_BIT(RCC->CR, RCC_CR_HSION);
-	while (!(READ_BIT(RCC->CR, RCC_CR_HSIRDY) == (RCC_CR_HSIRDY)));
-	
-	/* Set AHB prescaler*/
-	MODIFY_REG(RCC->CFGR, RCC_CFGR_HPRE, 0x00000000U);
-	
-	/* Set APB1 prescaler*/
-	MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE, 0x00000000U);
+    SET_BIT(RCC->CR, RCC_CR_HSION); // Enable HSI
+    while (!(RCC->CR & RCC_CR_HSIRDY)); // Wait for HSI to stabilize
 
-	/* Sysclk activation on the HSI */
-	MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, 0x00000000U);
-	while(READ_BIT(RCC->CFGR, RCC_CFGR_SWS) != 0x00000000U);
+    /* Configure the AHB prescaler (HCLK) to 1 */
+    MODIFY_REG(RCC->CFGR, RCC_CFGR_HPRE, RCC_CFGR_HPRE_0);
+
+    /* Configure the APB1 prescaler (PCLK1) to 1 */
+    MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE, RCC_CFGR_PPRE_0);
+
+    /* Select HSI as the system clock source */
+    MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SWS_HSISYS);
+
+    /* Wait for HSI to be used as the system clock */
+    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSISYS);
+
+    /* Configure the voltage scaling */
+    MODIFY_REG(PWR->CR1, PWR_CR1_VOS, PWR_CR1_VOS_0); // Voltage scale 1
+
+    /* Configure flash latency (0 wait states) */
+    MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, FLASH_ACR_LATENCY_0);
 	SystemCoreClockUpdate();
 }
 
 void StayAlive(void *argument){
-	rgbHandler.set_color(Device::Led::Colors::GREEN);
+	Device::Led::RGBLed rgbHandler(
+		new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 8), // R
+		new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 9), // G
+		new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 7)  // B
+	);
+	ledHandle = &rgbHandler; 
 	while(1){
 		// Reset Watchdog
+		rgbHandler.set_color(Device::Led::Colors::GREEN);
 		osDelay(1000);
 	}
 }
 
 void app_main() {
 	SystemClockInit();
-
 	// Initialize FreeRTOS and threads
 	osKernelInitialize();
 	defaultTaskHandle = osThreadNew(StayAlive, NULL, &defaultTask_attributes);
-	commThreadHandle = osThreadNew(communication_task,NULL,&commThreadHandle_attributes);
 	
 	osKernelStart();
 
@@ -75,7 +74,7 @@ void app_main() {
 extern "C" void HardFault_Handler(void)
 {	
 	__disable_irq();
-	rgbHandler.set_color(Device::Led::Colors::RED);
+	ledHandle->set_color(Device::Led::Colors::RED);
 	NVIC_SystemReset();
 }
 
@@ -88,11 +87,6 @@ extern "C" void NMI_Handler(void)
 }
 
 extern "C" void WWDG_IRQHandler(void){
-	rgbHandler.set_color(Device::Led::Colors::RED);
+	ledHandle->set_color(Device::Led::Colors::RED);
 }
 
-// extern "C" void Reset_Handler(void){
-// 	__disable_irq();
-// 	rgbHandler.set_color(Device::Led::Colors::RED);
-// 	NVIC_SystemReset();
-// }
