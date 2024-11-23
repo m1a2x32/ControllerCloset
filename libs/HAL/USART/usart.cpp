@@ -32,14 +32,21 @@ namespace HAL::UART{
         }
     }
 
+    void USART::clear_cr1_flag(CTRL_REG_1 flg){
+        CLEAR_BIT(usartInst->CR1, flg);
+    }
+
     void USART::set_cr1_flag(CTRL_REG_1 flg){
         SET_BIT(usartInst->CR1, flg);
     }
 
+    void USART::set_cr3_flag(CTRL_REG_3 flg){
+        SET_BIT(usartInst->CR3, flg);
+    }
 
     void USART::enable_rs485_driver(HAL::GPIO::AF::GPIO_AF *rtsPin){
         rts = rtsPin;
-        SET_BIT(usartInst->CR3, USART_CR3_DEM);
+        set_cr3_flag(ENABLE_RS485);
     }
 
     void USART::configure_baud_rate(uint32_t sysclock_mhz, uint32_t baud){
@@ -47,4 +54,11 @@ namespace HAL::UART{
         usartInst->BRR     = brr_value;
     }
 
+    void USART::write_data_IT(const char* data, size_t len){
+        txBuff.clear();
+        for (size_t i = 0; i < len; ++i) {
+            txBuff.push_front(data[i]); // Push data to the front of the deque
+        }
+        set_cr1_flag(USART_TX_ENABLE);
+    }
 }
