@@ -3,7 +3,11 @@
 #include "main.hpp"
 #include "Led.hpp"
 
-Device::Led::RGBLed* ledHandle;
+void app_main();
+extern "C" int main() {
+    app_main();
+	return 0;
+}
 
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
@@ -11,11 +15,6 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 257,
   .priority = (osPriority_t) osPriorityNormal,
 };
-
-extern "C" int main() {
-    app_main();
-	return 0;
-}
 
 
 void SystemClockInit(){
@@ -48,7 +47,6 @@ void StayAlive(void *argument){
 		new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 9), // G
 		new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 7)  // B
 	);
-	ledHandle = &rgbHandler; 
 	while(1){
 		// Reset Watchdog
 		rgbHandler.set_color(Device::Led::Colors::GREEN);
@@ -70,23 +68,3 @@ void app_main() {
 
 	}
 }
-
-extern "C" void HardFault_Handler(void)
-{	
-	__disable_irq();
-	ledHandle->set_color(Device::Led::Colors::RED);
-	NVIC_SystemReset();
-}
-
-extern "C" void NMI_Handler(void)
-{
-	while (1)
-	{
-
-	}
-}
-
-extern "C" void WWDG_IRQHandler(void){
-	ledHandle->set_color(Device::Led::Colors::RED);
-}
-
