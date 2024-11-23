@@ -41,6 +41,7 @@ file(GLOB source_list
 	${LIBS_DIR}/RGBLed/*.cpp
     ${SRC_DIR}/*.c
 	${SRC_DIR}/*.cpp
+	${SRC_DIR}/Application/*.cpp
 )
 
 add_executable(${CMAKE_PROJECT_NAME} 
