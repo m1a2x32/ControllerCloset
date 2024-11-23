@@ -59,6 +59,27 @@ namespace HAL::UART{
         for (size_t i = 0; i < len; ++i) {
             txBuff.push_front(data[i]); // Push data to the front of the deque
         }
-        set_cr1_flag(USART_TX_ENABLE);
+        set_cr1_flag(TX_BUFFER_EMPTY_ISR_ENABLE);
+    }
+
+    void USART::handle_interrupt(){
+        // Transmission Complete (TC) check
+        if (usartInst->ISR & USART_ISR_TC)
+        {
+            // Transmission complete, clear the flag
+            SET_BIT(usartInst->ICR, USART_ICR_TCCF);
+        }
+
+        if (usartInst->ISR & USART_ISR_TXE_TXFNF)
+        {
+            // If there is more data to send, transmit the next byte
+            if (!txBuff.empty()){
+                uint8_t nextByte = txBuff.front();
+                usartInst->TDR = nextByte;        // Load next byte into the data register
+                txBuff.pop_front();               // Remove the byte from the queue
+            } else {
+                clear_cr1_flag(TX_BUFFER_EMPTY_ISR_ENABLE);
+            }
+        }
     }
 }

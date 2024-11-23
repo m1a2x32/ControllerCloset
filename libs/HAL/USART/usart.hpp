@@ -40,10 +40,11 @@ namespace HAL::UART{
             void set_cr1_flag(CTRL_REG_1 flg);
             void clear_cr1_flag(CTRL_REG_1 flg);
             void set_cr3_flag(CTRL_REG_3 flg);
+            void handle_interrupt();
         private:
             USART_TypeDef* usartInst = nullptr;
-            std::deque<uint8_t> rxBuff {};
             std::deque<uint8_t> txBuff {};
+            std::deque<uint8_t> rxBuff {};
             HAL::GPIO::AF::GPIO_AF *rx, *tx, *rts;
             USART_TypeDef *get_usart_instance(USART_ID target);
     };
