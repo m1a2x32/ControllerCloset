@@ -19,15 +19,18 @@ void communication_task(void *argument)
     usart_handle->set_cr1_flag(USART_RX_ENABLE);
     usart_handle->set_cr1_flag(USART_TX_ENABLE);
     usart_handle->set_cr1_flag(TX_COMPLETE_ISR_ENABLE);
+    usart_handle->set_cr1_flag(IDLE_LINE_ISR);
     usart_handle->set_cr1_flag(USART_ENABLE);
 
     NVIC_SetPriority(USART2_IRQn, 3);
     NVIC_EnableIRQ(USART2_IRQn);
 
     while (1){
-        std::string send_data = "hello world!";
-        usart_handle->write_data_IT(send_data.c_str(), send_data.length());
-        osDelay(2000);
+        uint8_t send_data[] = {1,2,3,4,5,6,7,8};
+        usart_handle->write_data(send_data, sizeof(send_data), 5000);
+        uint8_t rec_data[255];
+        size_t len;
+        usart_handle->read_data(rec_data, len, 5000);
     }
     
 }
