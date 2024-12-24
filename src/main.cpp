@@ -19,7 +19,7 @@ const osThreadAttr_t defaultTask_attributes = {
 
 void SystemClockInit(){
     SET_BIT(RCC->CR, RCC_CR_HSION); // Enable HSI
-    while (!(RCC->CR & RCC_CR_HSIRDY)); // Wait for HSI to stabilize
+    while (!(RCC->CR & RCC_CR_HSIRDY)); // Wa2it for HSI to stabilize
 
     /* Configure the AHB prescaler (HCLK) to 1 */
     MODIFY_REG(RCC->CFGR, RCC_CFGR_HPRE, RCC_CFGR_HPRE_0);

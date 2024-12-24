@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
 
-cmake_policy(SET CMP0156 NEW)
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 message("Build type: "              ${CMAKE_BUILD_TYPE})
 
