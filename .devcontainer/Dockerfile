@@ -24,5 +24,6 @@ RUN apt-get update && apt-get install -y \
     openocd \
     usbip \
     usbutils \
+    ninja-build \
     hwdata && \
     rm -rf /var/lib/apt/lists/*

@@ -7,5 +7,5 @@
 		"--privileged"
 	],
 	"mounts": ["type=bind,source=/dev/bus/usb,target=/dev/bus/usb"],
-	"forwardPorts": [50000]
+	"forwardPorts": [50000,50001,50002]
 }
