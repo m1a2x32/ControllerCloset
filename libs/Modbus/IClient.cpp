@@ -2,11 +2,13 @@
 
 namespace Modbus {
 
-    IClient::IClient(uint8_t slave_address){
+    IClient::IClient(uint8_t slave_address)
+    {
         this->_slave_address = slave_address;
     }
 
-    void IClient::read_holding_registers(const uint16_t address, const uint16_t reg_nrs, uint16_t &data, uint8_t &data_size){
+    void IClient::read_holding_registers(const uint16_t address, const uint16_t reg_nrs, uint16_t &data, uint8_t &data_size)
+    {
         request_mbus_t mbus = {
             .address = _slave_address,
             .function = 0x03,
@@ -20,7 +22,8 @@ namespace Modbus {
         receive_response(&response, 1000);
     }
 
-    void IClient::write_holding_register(const uint16_t address, const uint16_t data_to_write, uint16_t &data, uint8_t &data_size){
+    void IClient::write_holding_register(const uint16_t address, const uint16_t data_to_write, uint16_t &data, uint8_t &data_size)
+    {
         request_mbus_t mbus = {
             .address = _slave_address,
             .function = 0x06,

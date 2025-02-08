@@ -3,22 +3,27 @@
 
 namespace HAL::GPIO {
 
-    IO::IO(AVAILABLE_PORTS _ioPort, uint8_t _ioPin) {
+    IO::IO(AVAILABLE_PORTS _ioPort, uint8_t _ioPin)
+    {
         if(_ioPin > 15) std::range_error("Pin number not available");
         port    = get_port_instance(_ioPort);
         pinNr   = _ioPin;
     }
 
-    void IO::config_pupd(PUPD_REG reg){
+    void IO::config_pupd(PUPD_REG reg)
+    {
         MODIFY_REG(port->PUPDR, (0x3UL << (pinNr << 1)), (reg << (pinNr << 1)));
     }
 
-    void IO::set_io_type(GPIO_MODES reg){
+    void IO::set_io_type(GPIO_MODES reg)
+    {
         MODIFY_REG(port->MODER, (0x3UL << (pinNr << 1)), (reg << (pinNr << 1)));
     }
 
-    GPIO_TypeDef *IO::get_port_instance(AVAILABLE_PORTS target) {
-        switch (target) {
+    GPIO_TypeDef *IO::get_port_instance(AVAILABLE_PORTS target) 
+    {
+        switch (target) 
+        {
             case PORTA:
                 SET_BIT(RCC->IOPENR, RCC_IOPENR_GPIOAEN); // Enable Clock for PORTx
                 return GPIOA;
@@ -40,59 +45,76 @@ namespace HAL::GPIO {
         }
     }
 
-    namespace INPUT {
+    namespace INPUT 
+    {
 
-        GPIO_INPUT::GPIO_INPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin): IO(_ioPort, _ioPin){
+        GpioInput::GpioInput(AVAILABLE_PORTS _ioPort, uint8_t _ioPin): IO(_ioPort, _ioPin)
+        {
             set_io_type(GPIO_MODES::INPUT_MODE);
         }
         
-        bool GPIO_INPUT::read_state(){
+        bool GpioInput::read_state()
+        {
             return (port->IDR & (1 << pinNr)) != 0;
         }
     }
 
-    namespace OUTPUT {
+    namespace OUTPUT 
+    {
 
-        GPIO_OUTPUT::GPIO_OUTPUT(AVAILABLE_PORTS _ioPort, uint8_t _ioPin) : IO(_ioPort, _ioPin){
+        GpioOutput::GpioOutput(AVAILABLE_PORTS _ioPort, uint8_t _ioPin) : IO(_ioPort, _ioPin)
+        {
             set_io_type(GPIO_MODES::OUTPUT_MODE);
         }
 
-        void GPIO_OUTPUT::set_pin(){
+        void GpioOutput::set_pin()
+        {
             // Todo: double check this work, if not bsrr reg
             SET_BIT(port->BSRR, (1 << pinNr));
         }
 
-        void GPIO_OUTPUT::reset_pin(){
+        void GpioOutput::reset_pin()
+        {
             SET_BIT(port->BSRR, (1 << (pinNr + 16)));
         }
 
-        bool GPIO_OUTPUT::read_output(){
+        bool GpioOutput::read_output()
+        {
             return READ_BIT(port->ODR, (1 << pinNr));
         }
 
-        void GPIO_OUTPUT::toggle_pin(){
+        void GpioOutput::toggle_pin()
+        {
             read_output() == true ? reset_pin() : set_pin();
         }
 
-        void GPIO_OUTPUT::set_output_type(TYPE_REG oTypeReg){
+        void GpioOutput::set_output_type(TYPE_REG oTypeReg)
+        {
             MODIFY_REG(port->OTYPER, (0x1UL << pinNr), (oTypeReg << pinNr));
         }
 
-        void GPIO_OUTPUT::set_output_speed(SPEED_REG oSpeedReg){
+        void GpioOutput::set_output_speed(SPEED_REG oSpeedReg)
+        {
             MODIFY_REG(port->OSPEEDR, (0x3UL << (pinNr << 1)), (oSpeedReg << (pinNr << 1)));
         }
     }
 
-    namespace AF {
-        GPIO_AF::GPIO_AF(AVAILABLE_PORTS _ioPort, uint8_t _ioPin, ALTERNTAE_FUNCTIONS nr) : IO(_ioPort, _ioPin){
+    namespace AF 
+    {
+        GpioAF::GpioAF(AVAILABLE_PORTS _ioPort, uint8_t _ioPin, ALTERNTAE_FUNCTIONS nr) : IO(_ioPort, _ioPin)
+        {
             set_io_type(GPIO_MODES::AF_MODE);
             set_alternate_function(nr);
         }
 
-        void GPIO_AF::set_alternate_function(ALTERNTAE_FUNCTIONS nr){
-            if (pinNr <= 7){
+        void GpioAF::set_alternate_function(ALTERNTAE_FUNCTIONS nr)
+        {
+            if (pinNr <= 7)
+            {
                 MODIFY_REG(port->AFR[0], (0x7UL << (pinNr << 2)), (nr << (pinNr << 2)));
-            } else {
+            } 
+            else 
+            {
                 uint8_t pin_to_write = pinNr - 7;
                 MODIFY_REG(port->AFR[1], (0x7UL << (pin_to_write << 2)), (nr << (pin_to_write << 2)));
             }

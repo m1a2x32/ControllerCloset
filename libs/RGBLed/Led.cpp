@@ -1,9 +1,10 @@
 #include "Led.hpp"
 
 // Note: *** Output logic inversed on LEDs ***
-namespace Device::Led{
+namespace Device::Led
+{
 
-    RGBLed::RGBLed(GPIO_OUTPUT *r, GPIO_OUTPUT *g, GPIO_OUTPUT *b)
+    RGBLed::RGBLed(GpioOutput *r, GpioOutput *g, GpioOutput *b)
        : ledBlue(b),  // Initialize ledBlue with PORTB and pin 7
          ledRed(r),   // Initialize ledRed with PORTB and pin 8
          ledGreen(g),  // Initialize ledGreen with PORTB and pin 9
@@ -12,35 +13,47 @@ namespace Device::Led{
        set_off();
     }
 
-    void RGBLed::set_color(Color color){
+    void RGBLed::set_color(Color color)
+    {
         requested_color = color;
         update_leds();
     }
 
-    void RGBLed::set_off(){
+    void RGBLed::set_off()
+    {
         requested_color = Color(0, 0, 0);
         update_leds();
     }
 
-    void RGBLed::update_leds() {
+    void RGBLed::update_leds() 
+    {
         // Set blue LED
-        if (requested_color.blue > 0) {
+        if (requested_color.blue > 0) 
+        {
             ledBlue->reset_pin();
-        } else {
+        } 
+        else 
+        {
             ledBlue->set_pin();
         }
 
         // Set red LED
-        if (requested_color.red > 0) {
+        if (requested_color.red > 0) 
+        {
             ledRed->reset_pin();
-        } else {
+        } 
+        else 
+        {
             ledRed->set_pin();
         }
 
         // Set green LED
-        if (requested_color.green > 0) {
+        if (requested_color.green > 0) 
+        {
             ledGreen->reset_pin();
-        } else {
+        } 
+        else 
+        {
             ledGreen->set_pin();
         }
     }

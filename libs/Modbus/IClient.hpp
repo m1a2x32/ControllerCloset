@@ -2,16 +2,19 @@
 
 #include <stdint.h>
 
-namespace Modbus {
+namespace Modbus 
+{
     #pragma pack(push, n)
-    struct request_mbus_t {
+    struct request_mbus_t 
+    {
         uint8_t address;
         uint8_t function;
         uint16_t start_address;
         uint16_t function_variable_byte;
         uint16_t crc;
     };
-    struct response_mbus_t {
+    struct response_mbus_t 
+    {
         uint8_t address;
         uint8_t function;
         uint16_t start_address;
@@ -21,7 +24,8 @@ namespace Modbus {
     };
     #pragma pack(pop)
 
-    enum mbus_err{
+    enum mbus_err
+    {
         MBUS_ERR_NONE,                   // No error
         MBUS_ERR_TIMEOUT,                // Timeout occurred
         MBUS_ERR_CONNECTION_FAILED,      // Connection issue
@@ -30,7 +34,8 @@ namespace Modbus {
         MBUS_ERR_CRC_MISMATCH,           // CRC check failed
     };
 
-    class IClient{
+    class IClient
+    {
         public:
             IClient(uint8_t slave_address);
             /* Only functions soil sensor supports, add more if needed */
