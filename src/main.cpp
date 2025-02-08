@@ -1,5 +1,3 @@
-#include "FreeRTOS.h"
-#include "cmsis_os2.h"
 #include "main.hpp"
 #include "Led.hpp"
 
@@ -16,6 +14,12 @@ const osThreadAttr_t defaultTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 
+osThreadId_t commTaskHandle;
+const osThreadAttr_t commTask_attributes = {
+  .name = "Communication",
+  .stack_size = 2048,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 void SystemClockInit(){
     SET_BIT(RCC->CR, RCC_CR_HSION); // Enable HSI
@@ -58,8 +62,10 @@ void app_main() {
 	SystemClockInit();
 	// Initialize FreeRTOS and threads
 	osKernelInitialize();
-	defaultTaskHandle = osThreadNew(StayAlive, NULL, &defaultTask_attributes);
 	
+	defaultTaskHandle = osThreadNew(StayAlive, NULL, &defaultTask_attributes);
+	commTaskHandle 	  = osThreadNew(communication_task, NULL, &commTask_attributes);
+
 	osKernelStart();
 
     /* Loop forever */

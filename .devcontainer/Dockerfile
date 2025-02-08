@@ -1,6 +1,8 @@
-FROM mcr.microsoft.com/devcontainers/cpp:1-ubuntu-22.04
+FROM debian
 
-# setup all the dependencies for F' and the TM4C
+ENV TZ=America/New_York \
+    DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -18,9 +20,10 @@ RUN apt-get update && apt-get install -y \
     libnewlib-arm-none-eabi \
     libstdc++-arm-none-eabi-newlib \
     gdb-multiarch \
-    graphviz \
     stlink-tools \
-    openocd
-
-# if using GDB on the host instead of the container
-EXPOSE 50000
+    openocd \
+    usbip \
+    usbutils \
+    ninja-build \
+    hwdata && \
+    rm -rf /var/lib/apt/lists/*

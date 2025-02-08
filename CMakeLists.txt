@@ -39,8 +39,10 @@ file(GLOB source_list
 	${HAL_DIR}/GPIO/*.cpp
     ${HAL_DIR}/USART/*.cpp
 	${LIBS_DIR}/RGBLed/*.cpp
+	${LIBS_DIR}/Modbus/*.cpp
     ${SRC_DIR}/*.c
 	${SRC_DIR}/*.cpp
+	${SRC_DIR}/Application/*.cpp
 )
 
 add_executable(${CMAKE_PROJECT_NAME} 
@@ -52,6 +54,7 @@ add_executable(${CMAKE_PROJECT_NAME}
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE 
 	${HAL_DIR}/GPIO
 	${HAL_DIR}/USART
+	${LIBS_DIR}/Modbus
 	${LIBS_DIR}/RGBLed
 	${SRC_DIR}
 )

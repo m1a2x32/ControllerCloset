@@ -1,0 +1,5 @@
+Live debug is possible by porting the comport of the debugger using usbipd.
+```
+usbipd bind -b <bus id>
+usbipd attach --wsl -b <busid>
+```
