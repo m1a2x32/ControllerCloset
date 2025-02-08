@@ -7,7 +7,8 @@
 #include <deque>
 #include <memory>
 
-namespace HAL::UART{
+namespace HAL::UART
+{
 
     enum USART_ID{
         USART_1 = 1,
@@ -29,13 +30,14 @@ namespace HAL::UART{
         ENABLE_RS485                = USART_CR3_DEM,
     };
 
-    class USART {
+    class Usart 
+    {
         public:
             
-            USART(
+            Usart(
                 USART_ID instance, 
-                HAL::GPIO::AF::GPIO_AF *_rx, 
-                HAL::GPIO::AF::GPIO_AF *_tx
+                HAL::GPIO::AF::GpioAF *_rx, 
+                HAL::GPIO::AF::GpioAF *_tx
             );
 
             // Configuration
@@ -46,7 +48,7 @@ namespace HAL::UART{
 
             void set_cr3_flag(CTRL_REG_3 flg);
 
-            void enable_rs485_driver(HAL::GPIO::AF::GPIO_AF *rtsPin);
+            void enable_rs485_driver(HAL::GPIO::AF::GpioAF *rtsPin);
 
             BaseType_t write_data(const uint8_t* data, size_t len, uint32_t timeout_ms);
             BaseType_t read_data(uint8_t* data, size_t& len, uint32_t timeout_ms);
@@ -61,7 +63,7 @@ namespace HAL::UART{
             TaskHandle_t txTaskHandle = nullptr;  // Task waiting for TX completion
             TaskHandle_t rxTaskHandle = nullptr;  // Task waiting for RX completion
 
-            HAL::GPIO::AF::GPIO_AF *rx, *tx, *rts;
+            HAL::GPIO::AF::GpioAF *rx, *tx, *rts;
             USART_TypeDef *get_usart_instance(USART_ID target);
     };
 }

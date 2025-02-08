@@ -3,9 +3,11 @@
 
 using namespace HAL::GPIO::OUTPUT;
 
-namespace Device::Led{
+namespace Device::Led
+{
     
-    struct Color {
+    struct Color 
+    {
         uint8_t red;
         uint8_t green;
         uint8_t blue;
@@ -24,12 +26,13 @@ namespace Device::Led{
         const Color GREEN(0,255,0);
     }
 
-    class RGBLed{
+    class RGBLed
+    {
         public:
             RGBLed(
-                GPIO_OUTPUT *r,
-                GPIO_OUTPUT *g, 
-                GPIO_OUTPUT *b
+                GpioOutput *r,
+                GpioOutput *g, 
+                GpioOutput *b
             );
             /**
              * Set color automatically sets the target color for the led.
@@ -41,7 +44,7 @@ namespace Device::Led{
              */
             void set_off();
         private:
-            GPIO_OUTPUT *ledBlue, *ledRed, *ledGreen;
+            GpioOutput *ledBlue, *ledRed, *ledGreen;
             Color requested_color;
 
             /**

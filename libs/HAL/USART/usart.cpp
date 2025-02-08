@@ -5,13 +5,14 @@ using namespace HAL::GPIO::AF;
 
 namespace HAL::UART{
 
-    USART::USART(USART_ID instance, HAL::GPIO::AF::GPIO_AF *_rx, HAL::GPIO::AF::GPIO_AF *_tx)
+    Usart::Usart(USART_ID instance, HAL::GPIO::AF::GpioAF *_rx, HAL::GPIO::AF::GpioAF *_tx)
         : usartInst(get_usart_instance(instance)), rx(_rx), tx(_tx)
     {
 
     }
 
-    USART_TypeDef *USART::get_usart_instance(USART_ID target){
+    USART_TypeDef *Usart::get_usart_instance(USART_ID target)
+    {
         switch (target)
         {
         case USART_1:
@@ -27,40 +28,47 @@ namespace HAL::UART{
             SET_BIT(RCC->APBENR1, RCC_APBENR1_USART4EN);
             return USART4;
         default:
-            std::logic_error("Select available USART instance");
+            std::logic_error("Select available Usart instance");
             return nullptr;
         }
     }
 
-    void USART::clear_cr1_flag(CTRL_REG_1 flg){
+    void Usart::clear_cr1_flag(CTRL_REG_1 flg)
+    {
         CLEAR_BIT(usartInst->CR1, flg);
     }
 
-    void USART::set_cr1_flag(CTRL_REG_1 flg){
+    void Usart::set_cr1_flag(CTRL_REG_1 flg)
+    {
         SET_BIT(usartInst->CR1, flg);
     }
 
-    void USART::set_cr3_flag(CTRL_REG_3 flg){
+    void Usart::set_cr3_flag(CTRL_REG_3 flg)
+    {
         SET_BIT(usartInst->CR3, flg);
     }
 
-    void USART::enable_rs485_driver(HAL::GPIO::AF::GPIO_AF *rtsPin){
+    void Usart::enable_rs485_driver(HAL::GPIO::AF::GpioAF *rtsPin)
+    {
         rts = rtsPin;
         set_cr3_flag(ENABLE_RS485);
     }
 
-    void USART::configure_baud_rate(uint32_t sysclock_mhz, uint32_t baud){
+    void Usart::configure_baud_rate(uint32_t sysclock_mhz, uint32_t baud)
+    {
         uint32_t brr_value = sysclock_mhz / baud;
         usartInst->BRR     = brr_value;
     }
 
-    BaseType_t USART::write_data(const uint8_t* data, size_t len, uint32_t timeout_ms){
+    BaseType_t Usart::write_data(const uint8_t* data, size_t len, uint32_t timeout_ms)
+    {
         configASSERT( txTaskHandle == NULL );
         txTaskHandle = xTaskGetCurrentTaskHandle();
 
         /* Get ready to send data */
         txBuff.clear();
-        for (size_t i = 0; i < len; ++i) {
+        for (size_t i = 0; i < len; ++i) 
+        {
             txBuff.push_front(data[i]);
         }
         set_cr1_flag(TX_BUFFER_EMPTY_ISR_ENABLE);           // Enable sending
@@ -72,7 +80,8 @@ namespace HAL::UART{
         return notifyResult;
     }
 
-    BaseType_t USART::read_data(uint8_t* data, size_t& len, uint32_t timeout_ms){
+    BaseType_t Usart::read_data(uint8_t* data, size_t& len, uint32_t timeout_ms)
+    {
         configASSERT( rxTaskHandle == NULL );
         rxTaskHandle = xTaskGetCurrentTaskHandle();
         
@@ -92,11 +101,13 @@ namespace HAL::UART{
         return notifyResult;
     }
 
-    void USART::handle_interrupt(){
+    void Usart::handle_interrupt()
+    {
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
         /* Send complete flag to verify we are done */
-        if (usartInst->ISR & USART_ISR_TC) {
+        if (usartInst->ISR & USART_ISR_TC) 
+        {
             SET_BIT(usartInst->ICR, USART_ICR_TCCF);
             if(txTaskHandle){                               // Check for task handle not being NULL
                 vTaskNotifyGiveFromISR(txTaskHandle, &xHigherPriorityTaskWoken);        
@@ -104,7 +115,8 @@ namespace HAL::UART{
         }
 
         /* TX task indicates we are ready to send */
-        if (usartInst->ISR & USART_ISR_TXE_TXFNF) {
+        if (usartInst->ISR & USART_ISR_TXE_TXFNF)
+        {
             if (!txBuff.empty()){
                 uint8_t nextByte = txBuff.front();
                 usartInst->TDR = nextByte;                  // Writing data to TDR clears ISR
@@ -115,15 +127,18 @@ namespace HAL::UART{
         }
 
         /* RX task indicates there is an incoming byte */
-        if (usartInst->ISR & USART_ISR_RXNE_RXFNE_Msk) {
+        if (usartInst->ISR & USART_ISR_RXNE_RXFNE_Msk) 
+        {
             uint8_t incomingByte = usartInst->RDR;          // Reading data from RDR clears ISR
             rxBuff.push_back(incomingByte);
         }
 
         /* Idle line indicates RX task has finished */
-        if(usartInst->ISR & USART_ISR_IDLE) {
+        if(usartInst->ISR & USART_ISR_IDLE) 
+        {
             SET_BIT(usartInst->ICR, USART_ICR_IDLECF);      // Clear flag
-            if(rxTaskHandle){                               // Check for task handle not being NULL
+            if(rxTaskHandle)
+            {                               // Check for task handle not being NULL
                 vTaskNotifyGiveFromISR(rxTaskHandle, &xHigherPriorityTaskWoken);    
             }
         }

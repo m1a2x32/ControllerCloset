@@ -47,9 +47,9 @@ void SystemClockInit(){
 
 void StayAlive(void *argument){
 	Device::Led::RGBLed rgbHandler(
-		new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 8), // R
-		new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 9), // G
-		new HAL::GPIO::OUTPUT::GPIO_OUTPUT(HAL::GPIO::AVAILABLE_PORTS::PORTB, 7)  // B
+		new HAL::GPIO::OUTPUT::GpioOutput(HAL::GPIO::AVAILABLE_PORTS::PORTB, 8), // R
+		new HAL::GPIO::OUTPUT::GpioOutput(HAL::GPIO::AVAILABLE_PORTS::PORTB, 9), // G
+		new HAL::GPIO::OUTPUT::GpioOutput(HAL::GPIO::AVAILABLE_PORTS::PORTB, 7)  // B
 	);
 	while(1){
 		// Reset Watchdog

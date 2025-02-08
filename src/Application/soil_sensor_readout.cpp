@@ -6,14 +6,14 @@
 using namespace HAL::GPIO;
 using namespace HAL::UART;
 
-USART *usart_handle;
+Usart *usart_handle;
 void communication_task(void *argument)
 {
-    auto tx = new AF::GPIO_AF(PORTD, 5, AF::AF0);
-    auto rx = new AF::GPIO_AF(PORTD, 6, AF::AF0);
-    auto dem = new AF::GPIO_AF(PORTD, 4, AF::AF0);
+    auto tx = new AF::GpioAF(PORTD, 5, AF::AF0);
+    auto rx = new AF::GpioAF(PORTD, 6, AF::AF0);
+    auto dem = new AF::GpioAF(PORTD, 4, AF::AF0);
 
-    usart_handle = new USART(USART_2, rx, tx);
+    usart_handle = new Usart(USART_2, rx, tx);
     usart_handle->enable_rs485_driver(dem);
     usart_handle->configure_baud_rate(SystemCoreClock, 9600);
     usart_handle->set_cr1_flag(USART_RX_ENABLE);
