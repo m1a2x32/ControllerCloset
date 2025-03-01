@@ -32,14 +32,16 @@ set(SRC_DIR 						${CMAKE_CURRENT_SOURCE_DIR}/src)
 add_subdirectory(${BOARD_DIR}/stm32g0x/STM32CubeG0)
 # ------------------- MCU Config ------------------- 
 set(linker_script_SRC               ${BOARD_DIR}/stm32g0x/STM32G070RBTx_FLASH.ld)
-include(STM32G0_PARA)
+include(${BOARD_DIR}/stm32g0x/STM32G0_PARA.cmake)
 
 # ------------------- LIST SOURCE -------------------
 file(GLOB source_list
 	${HAL_DIR}/GPIO/*.cpp
     ${HAL_DIR}/USART/*.cpp
+	${HAL_DIR}/TIMER/*.cpp
 	${LIBS_DIR}/RGBLed/*.cpp
 	${LIBS_DIR}/Modbus/*.cpp
+	${LIBS_DIR}/PWM/*.cpp
     ${SRC_DIR}/*.c
 	${SRC_DIR}/*.cpp
 	${SRC_DIR}/Application/*.cpp
@@ -54,8 +56,10 @@ add_executable(${CMAKE_PROJECT_NAME}
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE 
 	${HAL_DIR}/GPIO
 	${HAL_DIR}/USART
+	${HAL_DIR}/TIMER
 	${LIBS_DIR}/Modbus
 	${LIBS_DIR}/RGBLed
+	${LIBS_DIR}/PWM
 	${SRC_DIR}
 )
 
