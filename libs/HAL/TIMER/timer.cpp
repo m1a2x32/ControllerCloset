@@ -17,7 +17,7 @@ namespace HAL::TIMER
                 SET_BIT(RCC->APBENR2, RCC_APBENR2_TIM1EN);
                 _timInst = TIM1;
                 _timInst->DIER |= TIM_DIER_UIE; // Enable update interrupt
-                _timInst->DIER |= 1 << channel; // Enable channel to generate interrupt
+                _timInst->DIER |= (TIM_DIER_CC1IE_Pos << channel); // Enable channel to generate interrupt
                 break;
             default:
                 std::range_error("Timer not available");
@@ -38,16 +38,14 @@ namespace HAL::TIMER
         SET_BIT(_timInst->CR1, TIM_CR1_CEN);
     }
 
-    void GenericTimer::set_ccer_reg(CCER_REG reg, uint8_t channel)
+    void GenericTimer::disable()
     {
-        if(channel > 6) std::range_error("Channel not available, Advanced timer has 6 channels max");
-
-        SET_BIT(_timInst->CCER, reg << (channel*4));
+        CLEAR_BIT(_timInst->CR1, TIM_CR1_CEN);
     }
 
-    void GenericTimer::set_ctrl_reg1(CTRL_REG1 reg)
+    void GenericTimer::enable_auto_reload()
     {
-        SET_BIT(_timInst->CR1, reg);
+        SET_BIT(_timInst->CR1, TIM_CR1_ARPE);
     }
 
 }
